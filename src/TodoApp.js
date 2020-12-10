@@ -1,10 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import TodoList from './TodoList'
 import AddTodo from './AddTodo'
 import { v4 as uuidv4 } from 'uuid'
 
 export default function TodoApp(){
-  const [todos, setTodos] = useState([])
+  const initialTodos = JSON.parse(window.localStorage.getItem('todos') || '[]');
+  
+  const [todos, setTodos] = useState(initialTodos)
+
+  useEffect(() => {
+    window.localStorage.setItem('todos', JSON.stringify(todos),[todos])
+  })
+  
   const addTodo = newTodo => {
     setTodos(
       [...todos, 
@@ -15,10 +22,12 @@ export default function TodoApp(){
         }
       ])
   }
+  
   const removeTodo = iD => {
     const updatedTodos = todos.filter(todo => todo.id !== iD)
     setTodos(updatedTodos)
   }
+
   const checkTodo = iD => {
     const updatedTodos = todos.map(todo =>
       todo.id === iD ? {...todo, completed: !todo.completed} : todo 
